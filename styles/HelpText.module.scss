@@ -1,0 +1,16 @@
+.helpText {
+  display: table;
+  .questionIcon,
+  & > p {
+    display: table-cell;
+  }
+  .questionIcon {
+    color: unset;
+    &:hover {
+      color: rgb(150, 150, 150);
+    }
+  }
+  & > p {
+    padding-left: 0.75rem;
+  }
+}

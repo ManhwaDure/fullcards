@@ -1,0 +1,151 @@
+@import url(https://spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css);
+@import url(https://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+
+section.fullsizeCard {
+  height: 100vh;
+  width: 100%;
+  font-family: "Nanum Gothic", sans-serif;
+  background-size: cover;
+  &.pseudoParallaxScrolling {
+    animation-name: pseudo-parallax-scrolling-background-animation;
+    animation-duration: 240s;
+    animation-iteration-count: infinite;
+  }
+  &.withTitle {
+    position: relative;
+    .title {
+      color: white;
+      position: absolute;
+      a {
+        text-decoration: none;
+        color: rgb(200, 200, 200);
+      }
+      a:hover {
+        color: white;
+      }
+      h1 {
+        font-size: 40px;
+        padding-bottom: 12px;
+        font-family: "Spoqa Han Sans Neo", sans-serif;
+        word-break: keep-all;
+      }
+      p {
+        font-size: 16px;
+        line-height: 24px;
+        word-break: keep-all;
+      }
+      .line {
+        display: inline-block;
+        border-top: 4px solid orangered;
+        width: 80px;
+        &.animated {
+          animation-name: title-line-animation;
+          animation-duration: 0.7s;
+          animation-iteration-count: 1;
+          animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+        }
+      }
+    }
+
+    /* title positions */
+    &:not(.hasTitleCentered) {
+      &.hasTitleBottom {
+        .title {
+          bottom: 90px;
+          @media screen and (max-width: 768px) {
+            bottom: 60px;
+          }
+        }
+      }
+      &.hasTitleTop {
+        .title {
+          top: 90px;
+          @media screen and (max-width: 768px) {
+            top: 40px;
+          }
+        }
+      }
+      &.hasTitleLeft {
+        .title {
+          text-align: left;
+          left: 120px;
+          padding-right: 120px;
+          @media screen and (max-width: 768px) {
+            left: 40px;
+            padding-right: 40px;
+          }
+        }
+      }
+      &.hasTitleRight {
+        .title {
+          text-align: right;
+          right: 120px;
+          padding-left: 120px;
+          @media screen and (max-width: 768px) {
+            right: 40px;
+            padding-left: 40px;
+          }
+        }
+      }
+    }
+    &.hasTitleCentered {
+      .title {
+        bottom: 50%;
+        right: 50%;
+        transform: translate(50%, 50%);
+        text-align: center;
+        padding: 10px;
+        width: calc(100vw - 60px);
+      }
+    }
+  }
+  .scrollDownText {
+    display: block;
+    color: rgb(220, 220, 220);
+    position: relative;
+    animation: scroll-down-text-animation 1s infinite
+      cubic-bezier(0.215, 0.61, 0.355, 1);
+  }
+  .scrollDownIcon {
+    position: absolute;
+    bottom: 3px;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    color: white;
+  }
+}
+@keyframes scroll-down-text-animation {
+  0% {
+    top: 0px;
+  }
+  35% {
+    top: 3px;
+  }
+  50% {
+    top: 0px;
+  }
+  100% {
+    top: 0px;
+  }
+}
+@keyframes pseudo-parallax-scrolling-background-animation {
+  0% {
+    background-position: 0%;
+  }
+
+  50% {
+    background-position: 100%;
+  }
+
+  100% {
+    background-position: 0%;
+  }
+}
+@keyframes title-line-animation {
+  0% {
+    width: 0px;
+  }
+  100% {
+    width: 80px;
+  }
+}
