@@ -219,7 +219,8 @@ export default class Edit extends Component<
           <strong>게시</strong>버튼을 눌러주세요.
           <br />
           <strong style={{ color: "red" }}>
-            볼 일 다 보셨으면 반드시 로그아웃해주세요!
+            볼 일 다 보셨으면 반드시 로그아웃해주세요! 반드시 미리보기로 확인한
+            후 게시하기!
           </strong>
         </p>
         {this.state.cards.map((card, index, cards) => (
