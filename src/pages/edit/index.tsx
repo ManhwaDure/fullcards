@@ -207,7 +207,46 @@ export default class Edit extends Component<
       },
     };
   }
+  editArea() {
+    return (
+      <div>
+        <p>
+          카드가 한 개도 없을시 "사이트 공사중입니다" 문구가 표시됩니다.
+          <br />
+          현재 이 페이지의 변경사항은 <strong>미리보기</strong>에만 반영되며,
+          외부사람들이 실제로 보는 <Link href="/">페이지</Link>
+          에는 반영되지 않습니다. 실제로 보는 페이지에 반영하려면 위{" "}
+          <strong>게시</strong>버튼을 눌러주세요.
+          <br />
+          <strong style={{ color: "red" }}>
+            볼 일 다 보셨으면 반드시 로그아웃해주세요!
+          </strong>
+        </p>
+        {this.state.cards.map((card, index, cards) => (
+          <CardEditor
+            orderUpButton={index !== 0}
+            orderDownButton={index !== cards.length - 1}
+            cardIndex={index + 1}
+            card={card}
+            onChange={this.updateCard(index)}
+            onDelete={this.removeCard(index)}
+            onReorder={this.reorderCard(index)}
+            key={index}
+            imageUploader={this._imageUploader}
+          />
+        ))}
+        <p className="buttons">
+          <button className="button is-primary" onClick={this.createCard}>
+            카드 생성
+          </button>
+        </p>
+      </div>
+    );
+  }
   render() {
+    const hasPermission =
+      this.state.idToken?.claims.firebase.sign_in_attributes.permissions
+        .homepage === true;
     return (
       <section className="section">
         <Head>
@@ -241,50 +280,32 @@ export default class Edit extends Component<
                 <button className="button" type="button" onClick={this.signOut}>
                   로그아웃
                 </button>
-                <a href="/edit/preview" target="_blank" className="button">
-                  미리보기
-                </a>
-                <button
-                  className="button is-primary"
-                  type="button"
-                  onClick={this.publish}
-                >
-                  게시
-                </button>
+                {hasPermission && [
+                  <a href="/edit/preview" target="_blank" className="button">
+                    미리보기
+                  </a>,
+                  <button
+                    className="button is-primary"
+                    type="button"
+                    onClick={this.publish}
+                  >
+                    게시
+                  </button>,
+                ]}
               </p>
               <p>
                 현재 {this.state.idToken.claims.email}으로 로그인하셨습니다.
                 <br />
                 <br />
-                카드가 한 개도 없을시 "사이트 공사중입니다" 문구가 표시됩니다.
-                <br />
-                현재 이 페이지의 변경사항은 <strong>미리보기</strong>에만
-                반영되며, 외부사람들이 실제로 보는 <Link href="/">페이지</Link>
-                에는 반영되지 않습니다. 실제로 보는 페이지에 반영하려면 위{" "}
-                <strong>게시</strong>버튼을 눌러주세요.
-                <br />
-                <strong style={{ color: "red" }}>
-                  볼 일 다 보셨으면 반드시 로그아웃해주세요!
-                </strong>
               </p>
-              {this.state.cards.map((card, index, cards) => (
-                <CardEditor
-                  orderUpButton={index !== 0}
-                  orderDownButton={index !== cards.length - 1}
-                  cardIndex={index + 1}
-                  card={card}
-                  onChange={this.updateCard(index)}
-                  onDelete={this.removeCard(index)}
-                  onReorder={this.reorderCard(index)}
-                  key={index}
-                  imageUploader={this._imageUploader}
-                />
-              ))}
-              <p className="buttons">
-                <button className="button is-primary" onClick={this.createCard}>
-                  카드 생성
-                </button>
-              </p>
+              {hasPermission ? (
+                this.editArea()
+              ) : (
+                <p>
+                  권한이 없습니다. 권한이 있음에도 불구하고 오류가 발생한다면
+                  다시 로그인해보세요.
+                </p>
+              )}
             </div>
           )}
         </div>
