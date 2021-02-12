@@ -1,6 +1,6 @@
 import { ChangeEvent, Component } from "react";
+import { CardSectionJsonData } from "../../CardSectionJsonData";
 import ImageUploader from "../../imageUploader";
-import { CardSectionJsonData } from "../../pages/types.d";
 import TinymceEditor from "../tinymceEditor";
 import CardContentButtonEditor from "./contentButton";
 

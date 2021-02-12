@@ -1,4 +1,4 @@
-import { CardSectionJsonData } from "./pages/types.d";
+import { CardSectionJsonData } from "./CardSectionJsonData";
 
 export enum CardPageDataType {
   Firebase,

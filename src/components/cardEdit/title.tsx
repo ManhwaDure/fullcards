@@ -1,5 +1,5 @@
 import { ChangeEvent, Component } from "react";
-import { CardSectionJsonData } from "../../pages/types.d";
+import { CardSectionJsonData } from "../../CardSectionJsonData";
 import { CardSectionTitlePosition } from "../cardSection";
 
 type propsType = {

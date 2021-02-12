@@ -1,8 +1,8 @@
 import { faAngleDown, faAngleUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ChangeEvent, Component } from "react";
+import { CardSectionJsonData } from "../../CardSectionJsonData";
 import ImageUploader from "../../imageUploader";
-import { CardSectionJsonData } from "../../pages/types.d";
 import GalleryEditorModal from "./galleryEditorModal";
 
 type propsType = {

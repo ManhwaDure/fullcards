@@ -1,4 +1,4 @@
-import { CardSectionTitlePosition } from "../components/cardSection";
+import { CardSectionTitlePosition } from "./components/cardSection";
 
 export type CardSectionJsonData = {
   title: {

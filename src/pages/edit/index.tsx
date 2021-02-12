@@ -8,11 +8,11 @@ import "firebase/database";
 import Head from "next/head";
 import Link from "next/link";
 import { Component } from "react";
+import { CardSectionJsonData } from "../../CardSectionJsonData";
 import CardEditor from "../../components/cardEdit/index";
 import firebaseConfig from "../../firebaseConfig";
 import ImageUploader, { ImageUploadResult } from "../../imageUploader";
 import transformCardPageData, { CardPageDataType } from "../../transformData";
-import { CardSectionJsonData } from "../types.d";
 
 export default class Edit extends Component<
   {},
