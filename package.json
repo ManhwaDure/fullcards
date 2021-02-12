@@ -3,9 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "prisma-dev": "prisma migrate dev --preview-feature",
-    "prisma-generate": "prisma generate",
-    "dev": "dotenv -e ./env/.env.dev -- next dev",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start"
   },
@@ -16,21 +14,17 @@
     "@tinymce/tinymce-react": "^3.10.1",
     "axios": "^0.21.1",
     "bulma": "^0.9.2",
-    "class-validator": "^0.13.1",
     "classnames": "^2.2.6",
     "cuid": "^2.1.8",
-    "dotenv-cli": "^4.0.0",
     "firebase": "^8.2.5",
     "mime-types": "^2.1.28",
-    "mysql2": "^2.2.5",
     "next": "10.0.6",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-visibility-sensor": "^5.1.1",
     "reflect-metadata": "^0.1.13",
     "sass": "^1.32.5",
-    "tinymce": "^5.6.2",
-    "typeorm": "^0.2.30"
+    "tinymce": "^5.6.2"
   },
   "devDependencies": {
     "@types/node": "^14.14.22",
