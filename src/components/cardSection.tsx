@@ -20,6 +20,7 @@ type CardSectionPropType = {
   backgroundStyle?: { [key: string]: string };
   pseudoParallaxScrolling?: boolean;
   pseudoParallaxScrollingDuration?: number;
+  scrollDownIcon?: boolean;
 };
 export default class CardSection extends Component<
   CardSectionPropType,
@@ -82,9 +83,11 @@ export default class CardSection extends Component<
             )}
           </p>
         </div>
-        <div className={styles.scrollDownIcon}>
-          <FontAwesomeIcon icon={faChevronDown} />
-        </div>
+        {this.props.scrollDownIcon !== false && (
+          <div className={styles.scrollDownIcon}>
+            <FontAwesomeIcon icon={faChevronDown} />
+          </div>
+        )}
       </section>
     );
   }
