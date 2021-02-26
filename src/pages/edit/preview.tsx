@@ -2,8 +2,8 @@ import firebase from "firebase/app";
 import "firebase/database";
 import Head from "next/head";
 import { Component } from "react";
+import firebaseConfig from "../../../data/firebaseConfig";
 import FirebaseCardPage from "../../components/firebaseCardPage";
-import firebaseConfig from "../../firebaseConfig";
 import ImageUploader from "../../imageUploader";
 
 export default class Preview extends Component<

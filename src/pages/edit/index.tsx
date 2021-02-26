@@ -8,9 +8,9 @@ import "firebase/database";
 import Head from "next/head";
 import Link from "next/link";
 import { Component } from "react";
+import firebaseConfig from "../../../data/firebaseConfig";
 import { CardSectionJsonData } from "../../CardSectionJsonData";
 import CardEditor from "../../components/cardEdit/index";
-import firebaseConfig from "../../firebaseConfig";
 import ImageUploader, { ImageUploadResult } from "../../imageUploader";
 import transformCardPageData, { CardPageDataType } from "../../transformData";
 
