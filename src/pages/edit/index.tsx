@@ -8,9 +8,9 @@ import "firebase/database";
 import Head from "next/head";
 import Link from "next/link";
 import { Component } from "react";
-import firebaseConfig from "../../../data/firebaseConfig";
 import { CardSectionJsonData } from "../../CardSectionJsonData";
 import CardEditor from "../../components/cardEdit/index";
+import fetchFirebaseConfig from "../../fetchFirebaseConfig";
 import ImageUploader, { ImageUploadResult } from "../../imageUploader";
 import transformCardPageData, { CardPageDataType } from "../../transformData";
 
@@ -32,22 +32,6 @@ export default class Edit extends Component<
       publishing: false,
     };
     this._imageUploader = new ImageUploader("/images_draft");
-    if (firebase.apps.length === 0) firebase.initializeApp(firebaseConfig);
-    firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        user.getIdTokenResult().then((idToken) => {
-          this.setState({
-            idToken,
-          });
-        });
-
-        this._databaseRef = firebase.database().ref("cards_draft");
-      } else
-        this.setState({
-          idToken: null,
-        });
-      this.attachDatabaseRefListener();
-    });
 
     this.removeCard = this.removeCard.bind(this);
     this.reorderCard = this.reorderCard.bind(this);
@@ -105,8 +89,24 @@ export default class Edit extends Component<
       this.setState({ publishing: false });
     }
   }
-  componentDidMount() {
-    this.attachDatabaseRefListener();
+  async componentDidMount() {
+    if (firebase.apps.length === 0)
+      firebase.initializeApp(await fetchFirebaseConfig());
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        user.getIdTokenResult().then((idToken) => {
+          this.setState({
+            idToken,
+          });
+        });
+
+        this._databaseRef = firebase.database().ref("cards_draft");
+      } else
+        this.setState({
+          idToken: null,
+        });
+      this.attachDatabaseRefListener();
+    });
   }
   attachDatabaseRefListener() {
     if (this._databaseRef !== null)

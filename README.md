@@ -7,6 +7,6 @@ This application is written with [Next.js](https://nextjs.org) and TypeScript. T
 
 Configuration files are located in `data` directory.
 
-- `firebaseConfig.tsx` : Configuration file for firebase on frontend
-- `firebaseAdminConfig.tsx` : Configuration file for firebase on backend
-- `redisConfig.tsx` : Redis client options used in backend
+- `firebaseConfig.json` : Configuration file for firebase on frontend
+- `firebaseAdminConfig.json` : Configuration file for firebase on backend
+- `redisConfig.json` : Redis client options used in backend

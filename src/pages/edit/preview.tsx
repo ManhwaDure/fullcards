@@ -2,8 +2,8 @@ import firebase from "firebase/app";
 import "firebase/database";
 import Head from "next/head";
 import { Component } from "react";
-import firebaseConfig from "../../../data/firebaseConfig";
 import FirebaseCardPage from "../../components/firebaseCardPage";
+import fetchFirebaseConfig from "../../fetchFirebaseConfig";
 import ImageUploader from "../../imageUploader";
 
 export default class Preview extends Component<
@@ -18,7 +18,10 @@ export default class Preview extends Component<
     this.state = {
       draftRef: null,
     };
-    if (firebase.apps.length === 0) firebase.initializeApp(firebaseConfig);
+  }
+  async componentDidMount() {
+    if (firebase.apps.length === 0)
+      firebase.initializeApp(await fetchFirebaseConfig());
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         console.log("refreshed");

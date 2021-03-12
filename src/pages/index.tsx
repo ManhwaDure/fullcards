@@ -2,10 +2,9 @@ import * as firebaseAdmin from "firebase-admin";
 import Head from "next/head";
 import { Component } from "react";
 import redis from "redis";
-import firebaseAdminConfig from "../../data/firebaseAdminConfig";
-import redisConfig from "../../data/redisConfig";
 import { CardSectionJsonData } from "../CardSectionJsonData";
 import CacheCardPage from "../components/cacheCardPage";
+import getConfig from "../getConfigs";
 import transformCardPageData, { CardPageDataType } from "../transformData";
 export default class Home extends Component<{
   data: CardSectionJsonData[];
@@ -53,9 +52,9 @@ export default class Home extends Component<{
 export function getServerSideProps(): Promise<{
   props: { data: CardSectionJsonData[]; imageUrls: { [key: string]: string } };
 }> {
-  return new Promise((resolve, reject) => {
-    const redisClient = redis.createClient(redisConfig);
-    redisClient.get("cached_card_props", (err, res) => {
+  return new Promise(async (resolve, reject) => {
+    const redisClient = redis.createClient(await getConfig("redis"));
+    redisClient.get("cached_card_props", async (err, res) => {
       if (err) reject(err);
       if (res !== null) {
         return resolve({
@@ -66,7 +65,7 @@ export function getServerSideProps(): Promise<{
       const app =
         firebaseAdmin.apps.length !== 0
           ? firebaseAdmin.apps[0]
-          : firebaseAdmin.initializeApp(firebaseAdminConfig);
+          : firebaseAdmin.initializeApp(await getConfig("firebaseAdmin"));
 
       const database = firebaseAdmin.database();
       const ref = database.ref("/cards");
@@ -111,7 +110,7 @@ export function getServerSideProps(): Promise<{
 
           redisClient.setex(
             "cached_card_props",
-            1000 * 10 * 3,
+            60 * 3,
             JSON.stringify({
               imageUrls,
               data,
