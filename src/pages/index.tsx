@@ -1,33 +1,18 @@
-import firebase from "firebase/app";
-import "firebase/database";
+import * as firebaseAdmin from "firebase-admin";
 import Head from "next/head";
 import { Component } from "react";
-import firebaseConfig from "../../data/firebaseConfig";
-import CenteredLoading from "../components/centeredLoadingIcon";
-import FirebaseCardPage from "../components/firebaseCardPage";
-import ImageUploader from "../imageUploader";
-export default class Home extends Component<
-  {},
-  {
-    databaseRef: firebase.database.Reference;
-    imageUploader: ImageUploader;
-    loading: boolean;
-  }
-> {
+import redis from "redis";
+import firebaseAdminConfig from "../../data/firebaseAdminConfig";
+import redisConfig from "../../data/redisConfig";
+import { CardSectionJsonData } from "../CardSectionJsonData";
+import CacheCardPage from "../components/cacheCardPage";
+import transformCardPageData, { CardPageDataType } from "../transformData";
+export default class Home extends Component<{
+  data: CardSectionJsonData[];
+  imageUrls: { [id: string]: string };
+}> {
   constructor(props) {
     super(props);
-    this.state = {
-      databaseRef: null,
-      imageUploader: null,
-      loading: true,
-    };
-    if (firebase.apps.length === 0) firebase.initializeApp(firebaseConfig);
-  }
-  async componentDidMount() {
-    this.setState({
-      databaseRef: firebase.database().ref("/cards"),
-      imageUploader: new ImageUploader(),
-    });
   }
   render() {
     return (
@@ -55,17 +40,91 @@ export default class Home extends Component<
             content="중앙대학교 서울캠퍼스의 만화동아리"
           />
         </Head>
-        {this.state.databaseRef === null ? (
-          <CenteredLoading />
-        ) : (
-          <FirebaseCardPage
-            databaseRef={this.state.databaseRef}
-            imageUploader={this.state.imageUploader}
-            fallbackText="현재 사이트 공사중입니다"
-            loadOnce
-          />
-        )}
+        <CacheCardPage
+          data={this.props.data}
+          imageUrls={this.props.imageUrls}
+          fallbackText="현재 사이트 공사중입니다"
+        />
       </div>
     );
   }
+}
+
+const redisClient = redis.createClient(redisConfig);
+export function getServerSideProps(): Promise<{
+  props: { data: CardSectionJsonData[]; imageUrls: { [key: string]: string } };
+}> {
+  return new Promise((resolve, reject) => {
+    redisClient.get("cached_card_props", (err, res) => {
+      if (err) reject(err);
+      if (res !== null) {
+        return resolve({
+          props: JSON.parse(res),
+        });
+      }
+
+      const app =
+        firebaseAdmin.apps.length !== 0
+          ? firebaseAdmin.apps[0]
+          : firebaseAdmin.initializeApp(firebaseAdminConfig);
+
+      const database = firebaseAdmin.database();
+      const ref = database.ref("/cards");
+      ref
+        .get()
+        .then(async (snapshot) => {
+          if (!snapshot.exists()) {
+            return resolve({
+              props: {
+                data: [],
+                imageUrls: {},
+              },
+            });
+          }
+
+          const data = transformCardPageData(
+            snapshot.val(),
+            CardPageDataType.Firebase,
+            CardPageDataType.Json
+          );
+
+          const imageUrls = {};
+          const updateImageUrlCache = async (id: string) => {
+            if (!imageUrls[id]) {
+              const bucket = firebaseAdmin.storage(app).bucket();
+              const file = bucket.file("images/" + id);
+              imageUrls[id] = await file.getSignedUrl({
+                action: "read",
+                expires: new Date(Date.now() + 1000 * 60 * 60),
+              });
+            }
+          };
+
+          for (const i of data) {
+            if (i.background.image !== null) {
+              await updateImageUrlCache(i.background.image);
+            }
+            for (const button of i.content.buttons)
+              for (const galleryImage of button.galleryImages)
+                await updateImageUrlCache(galleryImage);
+          }
+
+          redisClient.setex(
+            "cached_card_props",
+            1000 * 10 * 3,
+            JSON.stringify({
+              imageUrls,
+              data,
+            })
+          );
+          resolve({
+            props: {
+              imageUrls,
+              data,
+            },
+          });
+        })
+        .catch(reject);
+    });
+  });
 }
