@@ -50,11 +50,11 @@ export default class Home extends Component<{
   }
 }
 
-const redisClient = redis.createClient(redisConfig);
 export function getServerSideProps(): Promise<{
   props: { data: CardSectionJsonData[]; imageUrls: { [key: string]: string } };
 }> {
   return new Promise((resolve, reject) => {
+    const redisClient = redis.createClient(redisConfig);
     redisClient.get("cached_card_props", (err, res) => {
       if (err) reject(err);
       if (res !== null) {
