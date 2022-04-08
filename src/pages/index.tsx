@@ -49,7 +49,7 @@ export default class Home extends Component<{
   }
 }
 
-export function getServerSideProps(): Promise<{
+export function getStaticProps(): Promise<{
   props: { data: CardSectionJsonData[]; imageUrls: { [key: string]: string } };
 }> {
   return new Promise(async (resolve, reject) => {
