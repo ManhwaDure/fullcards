@@ -1,0 +1,21 @@
+{
+  "entryFile": "src/pages/_app.tsx",
+  "noImplicitAdditionalProperties": "silently-remove-extras",
+  "controllerPathGlobs": ["backend/api/controllers/*Controller.ts"],
+  "spec": {
+    "outputDirectory": "tsoa-build",
+    "specVersion": 3,
+    "basePath": "api",
+    "securityDefinitions": {
+      "jwt": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "routes": {
+    "routesDir": "tsoa-build",
+    "authenticationModule": "backend/api/authentication.ts"
+  }
+}

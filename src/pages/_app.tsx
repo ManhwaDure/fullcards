@@ -1,4 +1,3 @@
-import "firebase/auth";
 import "reflect-metadata";
 
 function MyApp({ Component, pageProps }) {

@@ -4,13 +4,8 @@ import classNames from "classnames";
 import { Component, CSSProperties, ReactNode } from "react";
 import VisibilitySensor from "react-visibility-sensor";
 import styles from "../../styles/CardSection.module.scss";
+import { CardSectionTitlePosition } from "../CardSectionTitlePosition";
 
-export type CardSectionTitlePosition =
-  | "center"
-  | "bottomLeft"
-  | "bottomRight"
-  | "topLeft"
-  | "topRight";
 type CardSectionPropType = {
   titlePosition: CardSectionTitlePosition;
   title: string;
@@ -58,7 +53,7 @@ export default class CardSection extends Component<
           [styles.hasTitleRight]: !isTitleCenter && !isTitleLeft,
           [styles.hasTitleTop]: !isTitleCenter && isTitleTop,
           [styles.hasTitleBottom]: !isTitleCenter && !isTitleTop,
-          [styles.pseudoParallaxScrolling]: this.props.pseudoParallaxScrolling,
+          [styles.pseudoParallaxScrolling]: this.props.pseudoParallaxScrolling
         })}
         style={this.getBackgroundStyle()}
       >

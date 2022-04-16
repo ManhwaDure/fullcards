@@ -2,20 +2,25 @@ import { faAngleDown, faAngleUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Component } from "react";
 import styles from "../../../styles/CardEditor.module.scss";
-import { CardSectionJsonData } from "../../CardSectionJsonData";
+import { CardWithDetails } from "../../apiClient";
 import ImageUploader from "../../imageUploader";
 import CardBackgroundEditor from "./background";
 import CardContentEditor from "./content";
+import { CardContentButtonEditorEventHandlers } from "./contentButton";
 import CardTitleEditor from "./title";
 
 type propsType = {
   cardIndex: number;
-  card: CardSectionJsonData;
+  card: CardWithDetails;
   orderUpButton: boolean;
   orderDownButton: boolean;
-  onChange: (newCard: CardSectionJsonData) => void;
+  onChange: (
+    newCard: CardWithDetails,
+    changeType: "title" | "background" | "content"
+  ) => void;
   onDelete: () => void;
   onReorder: (difference: number) => void;
+  buttonEventHandlers: CardContentButtonEditorEventHandlers;
   imageUploader: ImageUploader;
 };
 type stateType = {
@@ -26,7 +31,7 @@ export default class CardEditor extends Component<propsType, stateType> {
   constructor(props) {
     super(props);
     this.state = {
-      cardExpanded: false,
+      cardExpanded: false
     };
     this.toggleCardExpansion = this.toggleCardExpansion.bind(this);
     this.handleBackgroundChange = this.handleBackgroundChange.bind(this);
@@ -35,27 +40,27 @@ export default class CardEditor extends Component<propsType, stateType> {
   }
 
   toggleCardExpansion() {
-    this.setState((state) => {
+    this.setState(state => {
       return {
-        cardExpanded: !state.cardExpanded,
+        cardExpanded: !state.cardExpanded
       };
     });
   }
 
-  handleBackgroundChange(background: CardSectionJsonData["background"]) {
+  handleBackgroundChange(background: CardWithDetails["background"]) {
     const newCard = this.props.card;
     newCard.background = background;
-    this.props.onChange(newCard);
+    this.props.onChange(newCard, "background");
   }
-  handleContentChange(content: CardSectionJsonData["content"]) {
+  handleContentChange(content: CardWithDetails["content"]) {
     const newCard = this.props.card;
     newCard.content = content;
-    this.props.onChange(newCard);
+    this.props.onChange(newCard, "content");
   }
-  handleTitlechange(title: CardSectionJsonData["title"]) {
+  handleTitlechange(title: CardWithDetails["title"]) {
     const newCard = this.props.card;
     newCard.title = title;
-    this.props.onChange(newCard);
+    this.props.onChange(newCard, "title");
   }
 
   render() {
@@ -125,6 +130,7 @@ export default class CardEditor extends Component<propsType, stateType> {
               onChange={this.handleContentChange}
               content={this.props.card.content}
               imageUploader={this.props.imageUploader}
+              buttonEventHandlers={this.props.buttonEventHandlers}
             />
           </div>
         </div>

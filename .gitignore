@@ -33,4 +33,14 @@ yarn-error.log*
 # vercel
 .vercel
 
-data/*
+# build
+tsoa-build
+backend-build
+src/apiClient
+
+# Config and data
+configs
+data
+
+#vscode
+.vscode

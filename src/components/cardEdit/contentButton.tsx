@@ -1,17 +1,28 @@
 import { faAngleDown, faAngleUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ChangeEvent, Component } from "react";
-import { CardSectionJsonData } from "../../CardSectionJsonData";
+import {
+  CardContentButton,
+  CardContentButtonHrefTypes,
+  CardWithDetails
+} from "../../apiClient";
 import ImageUploader from "../../imageUploader";
+import BufferedInput from "../bufferedInput";
 import GalleryEditorModal from "./galleryEditorModal";
 
 type propsType = {
-  buttons: CardSectionJsonData["content"]["buttons"];
-  onChange: (newButtonList: propsType["buttons"]) => void;
+  buttons: CardWithDetails["content"]["buttons"];
   imageUploader: ImageUploader;
-};
+} & CardContentButtonEditorEventHandlers;
 type stateType = {
   currentlyActiveGallery: number;
+};
+export type CardContentButtonEditorEventHandlers = {
+  onChange: (newButton: CardContentButton) => void;
+  onDelete: (buttonId: string) => void;
+  onCreate: () => void;
+  onSwap: (firstId: string, secondId: string) => void;
+  onGalleryChange: (buttonId: string, newImageIds: string[]) => void;
 };
 export default class CardContentButtonEditor extends Component<
   propsType,
@@ -20,92 +31,83 @@ export default class CardContentButtonEditor extends Component<
   constructor(props) {
     super(props);
     this.state = {
-      currentlyActiveGallery: null,
+      currentlyActiveGallery: null
     };
     this.createNewButton = this.createNewButton.bind(this);
     this.updateButton = this.updateButton.bind(this);
     this.handleChangeEvent = this.handleChangeEvent.bind(this);
+    this.handleBufferedInputEvent = this.handleBufferedInputEvent.bind(this);
     this.handleButtonReorder = this.handleButtonReorder.bind(this);
-    this.handleChangeEvent = this.handleChangeEvent.bind(this);
     this.handleGalleryCloseEvent = this.handleGalleryCloseEvent.bind(this);
     this.handleGalleryEvent = this.handleGalleryEvent.bind(this);
     this.openGallery = this.openGallery.bind(this);
   }
   createNewButton() {
-    const newButtonList = this.props.buttons;
-    newButtonList.push({
-      content: "새 버튼",
-      href: "https://apply.caumd.club",
-      hrefType: "anchor",
-      galleryImages: [],
-    });
-    this.props.onChange(newButtonList);
+    this.props.onCreate();
   }
-  updateButton(index: number, newAttrs: Partial<propsType["buttons"][number]>) {
-    const newButtons = this.props.buttons;
-    Object.assign(newButtons[index], newAttrs);
-    this.props.onChange(newButtons);
+  updateButton(index: number, newAttrs: Partial<CardContentButton>) {
+    const newButton = this.props.buttons[index];
+    Object.assign(newButton, newAttrs);
+    this.props.onChange(newButton);
   }
   handleChangeEvent(index: number) {
     return (evt: ChangeEvent<HTMLInputElement>) => {
       switch (evt.target.name) {
-        case "content":
-          this.updateButton(index, {
-            content: evt.target.value,
-          });
-          break;
         case "openLink":
           if (evt.target.checked)
             this.updateButton(index, {
-              hrefType: "anchor",
+              type: CardContentButtonHrefTypes.ANCHOR
             });
           break;
         case "openGallery":
           if (evt.target.checked)
             this.updateButton(index, {
-              hrefType: "gallery",
+              type: CardContentButtonHrefTypes.GALLERY
             });
+          break;
+      }
+    };
+  }
+  handleBufferedInputEvent(index: number) {
+    return ({ value, name }: { value: string; name: string }) => {
+      switch (name) {
+        case "content":
+          this.updateButton(index, {
+            content: value
+          });
           break;
         case "href":
           this.updateButton(index, {
-            href: evt.target.value,
+            href: value
           });
           break;
       }
     };
   }
   async handleDeleteButton(index: number) {
-    const newButtons = this.props.buttons;
-    const buttonDeleted = newButtons.splice(index, 1)[0];
-    const imageDeletePromises = buttonDeleted.galleryImages.map((i) =>
-      this.props.imageUploader.deleteImage(i)
-    );
-    await Promise.all(imageDeletePromises);
-    this.props.onChange(newButtons);
+    this.props.onDelete(this.props.buttons[index].id);
   }
   handleButtonReorder(index: number, difference: number) {
-    const newButtons = this.props.buttons;
-    const button = newButtons.splice(index, 1)[0];
-    newButtons.splice(index + difference, 0, button);
-    this.props.onChange(newButtons);
+    const id = this.props.buttons[index].id,
+      secondId = this.props.buttons[index + difference].id;
+    this.props.onSwap(id, secondId);
   }
   handleGalleryEvent(index: number) {
     return (newImageList: string[]) => {
-      const newButtons = this.props.buttons;
-      newButtons[index].galleryImages = newImageList;
-      this.props.onChange(newButtons);
+      const { id } = this.props.buttons[index];
+      this.props.onGalleryChange(id, newImageList);
     };
   }
   handleGalleryCloseEvent(index: number) {
     return () => {
       this.setState({
-        currentlyActiveGallery: null,
+        currentlyActiveGallery: null
       });
     };
   }
   openGallery(index: number) {
     this.setState({
-      currentlyActiveGallery: index,
+      currentlyActiveGallery: index
     });
   }
   render() {
@@ -118,19 +120,18 @@ export default class CardContentButtonEditor extends Component<
           </p>
         ) : (
           this.props.buttons.map((button, index, buttons) => (
-            <div className="card">
+            <div className="card" key={button.id}>
               <div className="card-content">
                 <div className="field">
                   <label htmlFor="" className="label">
                     하단 버튼 텍스트
                   </label>
                   <div className="control">
-                    <input
-                      type="text"
-                      className="input"
+                    <BufferedInput
                       name="content"
                       value={button.content}
-                      onChange={this.handleChangeEvent(index)}
+                      onChange={this.handleBufferedInputEvent(index)}
+                      key={button.content}
                     />
                   </div>
                 </div>
@@ -140,7 +141,7 @@ export default class CardContentButtonEditor extends Component<
                   </label>
                   <div className="control">
                     <form
-                      onSubmit={(evt) => {
+                      onSubmit={evt => {
                         evt.preventDefault();
                       }}
                     >
@@ -148,7 +149,9 @@ export default class CardContentButtonEditor extends Component<
                         <input
                           type="radio"
                           name="openGallery"
-                          checked={button.hrefType === "gallery"}
+                          checked={
+                            button.type === CardContentButtonHrefTypes.GALLERY
+                          }
                           onChange={this.handleChangeEvent(index)}
                         />
                         &nbsp; 갤러리 표시 (
@@ -161,16 +164,22 @@ export default class CardContentButtonEditor extends Component<
                         <input
                           type="radio"
                           name="openLink"
-                          checked={button.hrefType === "anchor"}
+                          checked={
+                            button.type === CardContentButtonHrefTypes.ANCHOR
+                          }
                           onChange={this.handleChangeEvent(index)}
                         />
                         &nbsp; 링크 열기 (링크 대상 :&nbsp;
-                        <input
-                          type="text"
+                        <BufferedInput
                           name="href"
                           value={button.href}
-                          disabled={button.hrefType !== "anchor"}
-                          onChange={this.handleChangeEvent(index)}
+                          small
+                          style={{ width: "230px" }}
+                          disabled={
+                            button.type !== CardContentButtonHrefTypes.ANCHOR
+                          }
+                          onChange={this.handleBufferedInputEvent(index)}
+                          key={button.href}
                         />
                         )
                       </label>
@@ -210,7 +219,7 @@ export default class CardContentButtonEditor extends Component<
                   </div>
                 </div>
                 <GalleryEditorModal
-                  images={button.galleryImages}
+                  images={button.galleryImages.map(i => i.image.id)}
                   active={this.state.currentlyActiveGallery === index}
                   onClose={this.handleGalleryCloseEvent(index)}
                   onChange={this.handleGalleryEvent(index)}

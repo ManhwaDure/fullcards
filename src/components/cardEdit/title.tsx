@@ -1,29 +1,26 @@
 import { ChangeEvent, Component } from "react";
-import { CardSectionJsonData } from "../../CardSectionJsonData";
-import { CardSectionTitlePosition } from "../cardSection";
+import { CardSectionTitlePosition, CardWithDetails } from "../../apiClient";
+import BufferedInput from "../bufferedInput";
 
 type propsType = {
-  title: CardSectionJsonData["title"];
+  title: CardWithDetails["title"];
   onChange: (newTitle: propsType["title"]) => void;
 };
 
 export default class CardTitleEditor extends Component<propsType> {
   constructor(props) {
     super(props);
-    this.handleInputEvent = this.handleInputEvent.bind(this);
+    this.handleRadioInputEvent = this.handleRadioInputEvent.bind(this);
+    this.handleBufferedInputEvent = this.handleBufferedInputEvent.bind(this);
   }
-  handleInputEvent(evt: ChangeEvent<HTMLInputElement>) {
+  handleRadioInputEvent(evt: ChangeEvent<HTMLInputElement>) {
     const newTitle = this.props.title;
-    switch (evt.target.name) {
-      case "content":
-        newTitle.content = evt.target.value;
-        break;
-      case "position":
-        newTitle.position = evt.target.value as CardSectionTitlePosition;
-        break;
-      default:
-        return;
-    }
+    newTitle.position = evt.target.value as CardSectionTitlePosition;
+    this.props.onChange(newTitle);
+  }
+  handleBufferedInputEvent(evt: { name: string; value: string }) {
+    const newTitle = this.props.title;
+    newTitle.content = evt.value;
     this.props.onChange(newTitle);
   }
   render() {
@@ -34,16 +31,15 @@ export default class CardTitleEditor extends Component<propsType> {
             제목
           </label>
           <div className="control">
-            <input
-              type="text"
-              className="input"
+            <BufferedInput
               name="content"
-              onChange={this.handleInputEvent}
+              onChange={this.handleBufferedInputEvent}
               value={this.props.title.content}
+              key={this.props.title.content}
             />
           </div>
         </div>
-        <form onSubmit={(evt) => evt.preventDefault()}>
+        <form onSubmit={evt => evt.preventDefault()}>
           <div className="field">
             <label htmlFor="" className="label">
               제목 위치
@@ -54,7 +50,7 @@ export default class CardTitleEditor extends Component<propsType> {
                   type="radio"
                   name="position"
                   value="topLeft"
-                  onChange={this.handleInputEvent}
+                  onChange={this.handleRadioInputEvent}
                   checked={this.props.title.position === "topLeft"}
                 />{" "}
                 좌상단
@@ -64,7 +60,7 @@ export default class CardTitleEditor extends Component<propsType> {
                   type="radio"
                   name="position"
                   value="topRight"
-                  onChange={this.handleInputEvent}
+                  onChange={this.handleRadioInputEvent}
                   checked={this.props.title.position === "topRight"}
                 />{" "}
                 우상단
@@ -74,7 +70,7 @@ export default class CardTitleEditor extends Component<propsType> {
                   type="radio"
                   name="position"
                   value="bottomLeft"
-                  onChange={this.handleInputEvent}
+                  onChange={this.handleRadioInputEvent}
                   checked={this.props.title.position === "bottomLeft"}
                 />{" "}
                 좌하단
@@ -84,7 +80,7 @@ export default class CardTitleEditor extends Component<propsType> {
                   type="radio"
                   name="position"
                   value="bottomRight"
-                  onChange={this.handleInputEvent}
+                  onChange={this.handleRadioInputEvent}
                   checked={this.props.title.position === "bottomRight"}
                 />{" "}
                 우하단
@@ -94,7 +90,7 @@ export default class CardTitleEditor extends Component<propsType> {
                   type="radio"
                   name="position"
                   value="center"
-                  onChange={this.handleInputEvent}
+                  onChange={this.handleRadioInputEvent}
                   checked={this.props.title.position === "center"}
                 />{" "}
                 중앙

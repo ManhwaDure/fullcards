@@ -1,8 +1,10 @@
 import { Component, ReactNode } from "react";
+import { CardSectionTitlePosition } from "../CardSectionTitlePosition";
 import CardContainer from "./cardContainer";
-import CardSection, { CardSectionTitlePosition } from "./cardSection";
+import CardSection from "./cardSection";
 
 export type CardSectionData = {
+  id: string;
   title: {
     content: string;
     position: CardSectionTitlePosition;
@@ -31,6 +33,7 @@ export class CardPage extends Component<CardPageProps> {
       <CardContainer>
         {this.props.cards.map((i, index, cards) => (
           <CardSection
+            key={i.id}
             title={i.title.content}
             titlePosition={i.title.position}
             background={(i.background.defaultGradient !== false
@@ -40,7 +43,6 @@ export class CardPage extends Component<CardPageProps> {
               .concat(i.background.images)
               .join(", ")}
             backgroundStyle={i.background.style || {}}
-            key={index}
             scrollDownText={i.scrollDownText || false}
             pseudoParallaxScrolling={
               i.background.pseudoParallaxScrollingAnimation || false

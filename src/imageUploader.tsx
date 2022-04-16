@@ -1,57 +1,71 @@
-import cuid from "cuid";
-import firebase from "firebase/app";
-import "firebase/storage";
-import mime from "mime-types";
+import { FullcardsApiClient } from "./apiClient";
+import { getApiClient } from "./GetApiClient";
+import ImageUrlGetterInterface from "./imageUrlGetterInterface";
 
 export interface ImageUploadResult {
   filename: string;
+  filesize: number;
   url: string;
   id: string;
 }
 
-export default class ImageUploader {
-  _prefix: string;
+export default class ImageUploader extends ImageUrlGetterInterface {
+  _urlPrefix: string;
+  _apiClient: FullcardsApiClient;
+  _idToFilenameDictionary: { [key: string]: string };
+  _serveStaticFileUrl: boolean;
 
-  constructor(prefix: string = "/images") {
-    this._prefix = prefix;
+  constructor({
+    imageUrlPrefix = "/api/images",
+    serveStaticFileUrl = false
+  }: {
+    imageUrlPrefix?: string;
+    apiBaseUrl?: string;
+    serveStaticFileUrl?: boolean;
+  } = {}) {
+    super();
+    this._urlPrefix = imageUrlPrefix;
+    this._apiClient = getApiClient();
+    this._idToFilenameDictionary = {};
+    this._serveStaticFileUrl = serveStaticFileUrl;
   }
-  async uploadImage(
-    file: File | Blob,
-    options: Partial<{ filename: string; id: string }> = {}
-  ): Promise<ImageUploadResult> {
-    const id = options.id || cuid();
-    const filename = file instanceof File ? file.name : options.filename;
-    const refPath = this._prefix + "/" + id;
-    const ref = firebase.storage().ref(refPath);
-    await ref.put(file);
-    await ref.updateMetadata({
-      contentType: mime.lookup(filename) || "application/octet-stream",
-      customMetadata: {
-        filename,
-      },
-    });
-    return await this.getInfoById(id);
+
+  addIdToFilenameDictionary(dictionary: { [key: string]: string }) {
+    this._idToFilenameDictionary = dictionary;
+  }
+
+  idToImageUrl(id: string) {
+    if (this._serveStaticFileUrl)
+      if (this._idToFilenameDictionary[id])
+        return this._urlPrefix + "/" + this._idToFilenameDictionary[id];
+      else
+        throw new Error(
+          "Filename corresponding to provided image id not found"
+        );
+    return this._urlPrefix + "/" + id;
+  }
+
+  async uploadImage(file: File | Blob): Promise<ImageUploadResult> {
+    const result = await this._apiClient.default.uploadImage({ file });
+    return {
+      ...result,
+      url: this.idToImageUrl(result.id)
+    };
   }
   async getInfoById(id: string): Promise<ImageUploadResult> {
-    const refPath = this._prefix + "/" + id;
-    const ref = firebase.storage().ref(refPath);
-    const metadata = await ref.getMetadata();
+    const result = await this._apiClient.default.getImageInfo(id);
     return {
-      filename: metadata.customMetadata.filename,
-      url: await ref.getDownloadURL(),
-      id,
+      ...result,
+      url: this.idToImageUrl(result.id)
     };
   }
   async deleteImage(id: string): Promise<void> {
-    const refPath = this._prefix + "/" + id;
-    const ref = firebase.storage().ref(refPath);
-    await ref.delete();
+    await this._apiClient.default.deleteImage(id);
   }
   async deleteAll(): Promise<void> {
-    const ref = firebase.storage().ref(this._prefix);
-    const images = await ref.listAll();
-    const promises = images.items.map((i) => {
-      return i.delete();
+    const images = await this._apiClient.default.getImages();
+    const promises = images.map(i => {
+      return this._apiClient.default.deleteImage(i.id);
     });
     await Promise.all(promises);
   }

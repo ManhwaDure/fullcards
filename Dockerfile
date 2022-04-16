@@ -1,6 +1,6 @@
 FROM node:14-alpine
 
-VOLUME [ "/app/data" ]
+VOLUME [ "/app/configs", "/app/data" ]
 
 WORKDIR /app
 COPY package.json yarn.lock ./

@@ -1,12 +1,13 @@
 import { faUpload } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ChangeEvent, Component } from "react";
-import { CardSectionJsonData } from "../../CardSectionJsonData";
+import { CardWithDetails, Image } from "../../apiClient";
 import ImageUploader from "../../imageUploader";
+import BufferedInput from "../bufferedInput";
 import HelpText from "../helpText";
 
 type propsType = {
-  background: CardSectionJsonData["background"];
+  background: CardWithDetails["background"];
   onChange: (newBackground: propsType["background"]) => void;
   imageUploader: ImageUploader;
 };
@@ -23,19 +24,20 @@ export default class CardBackgroundEditor extends Component<
   constructor(props) {
     super(props);
     this.handleInputEvent = this.handleInputEvent.bind(this);
+    this.handleBufferedInputEvent = this.handleBufferedInputEvent.bind(this);
     this.fetchBackgroundData = this.fetchBackgroundData.bind(this);
     this.state = {
       filename: null,
       uploading: false,
-      previousImageId: null,
+      previousImageId: null
     };
   }
-  async fetchBackgroundData(imageId) {
-    if (imageId)
-      this.props.imageUploader.getInfoById(imageId).then((info) => {
+  async fetchBackgroundData(image: Image) {
+    if (image)
+      this.props.imageUploader.getInfoById(image.id).then(info => {
         this.setState({
           filename: info.filename,
-          previousImageId: imageId,
+          previousImageId: image.id
         });
       });
   }
@@ -43,7 +45,7 @@ export default class CardBackgroundEditor extends Component<
     await this.fetchBackgroundData(this.props.background.image);
   }
   async componentDidUpdate() {
-    if (this.state.previousImageId !== this.props.background.image)
+    if (this.state.previousImageId !== this.props.background.image?.id)
       await this.fetchBackgroundData(this.props.background.image);
   }
   async handleInputEvent(evt: ChangeEvent<HTMLInputElement>) {
@@ -51,29 +53,26 @@ export default class CardBackgroundEditor extends Component<
     switch (evt.target.name) {
       case "image": {
         this.setState({
-          uploading: true,
+          uploading: true
         });
         if (evt.target.files.length !== 1) break;
-        if (newBackground.image !== null) {
+        if (newBackground.image) {
           await this.props.imageUploader.deleteImage(
-            this.props.background.image
+            this.props.background.image.id
           );
         }
         const result = await this.props.imageUploader.uploadImage(
           evt.target.files[0]
         );
-        newBackground.image = result.id;
+
+        newBackground.image = result;
         this.setState({
-          uploading: false,
+          uploading: false
         });
         break;
       }
       case "defaultGradient": {
         newBackground.defaultGradient = evt.target.checked;
-        break;
-      }
-      case "backgroundPosition": {
-        newBackground.style.backgroundPosition = evt.target.value;
         break;
       }
       case "pseudoParallaxScrollingAnimation": {
@@ -91,6 +90,11 @@ export default class CardBackgroundEditor extends Component<
       default:
         return;
     }
+    this.props.onChange(newBackground);
+  }
+  async handleBufferedInputEvent({ value }: { value: string }) {
+    const newBackground = this.props.background;
+    newBackground.css.backgroundPosition = value;
     this.props.onChange(newBackground);
   }
   render() {
@@ -122,7 +126,7 @@ export default class CardBackgroundEditor extends Component<
                   </span>
                 </span>
                 <span className="file-name">
-                  {this.props.background.image !== null
+                  {this.props.background.image
                     ? this.state.filename || "(정보 불러오는 중)"
                     : "(이미지 없음)"}
                 </span>
@@ -155,14 +159,11 @@ export default class CardBackgroundEditor extends Component<
             확인해보세요.
           </HelpText>
           <div className="control">
-            <input
-              type="text"
-              className="input"
+            <BufferedInput
               name="backgroundPosition"
-              value={
-                (this.props.background.style || {}).backgroundPosition || ""
-              }
-              onChange={this.handleInputEvent}
+              value={(this.props.background.css || {}).backgroundPosition || ""}
+              onChange={this.handleBufferedInputEvent}
+              key={(this.props.background.css || {}).backgroundPosition || ""}
             />
           </div>
         </div>
