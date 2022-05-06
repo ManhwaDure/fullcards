@@ -4,5 +4,5 @@
   "verbose": true,
   "stdout": true,
   "ext": "js,ts,tsx",
-  "exec": "yarn build && yarn start"
+  "exec": "yarn build-backend && yarn start"
 }
