@@ -1,7 +1,7 @@
 import { ChangeEvent, Component } from "react";
 import { CardWithDetails } from "../../apiClient";
 import ImageUploader from "../../imageUploader";
-import TinymceEditor from "../tinymceEditor";
+import QuillEditor from "../quillEditor";
 import CardContentButtonEditor, {
   CardContentButtonEditorEventHandlers
 } from "./contentButton";
@@ -37,7 +37,7 @@ export default class CardContentEditor extends Component<propType> {
             내용
           </label>
           <div className="control">
-            <TinymceEditor
+            <QuillEditor
               value={this.props.content.content}
               onChange={this.handleContentChange}
               key={this.props.content.content}
