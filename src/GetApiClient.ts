@@ -1,8 +1,8 @@
+import endpoint from "../configs/endpoints/clientSide.json";
 import { FullcardsApiClient } from "./apiClient";
 
-let apiClient: FullcardsApiClient;
-apiClient = new FullcardsApiClient({
-  BASE: "http://127.0.0.1:3000/api"
+const apiClient: FullcardsApiClient = new FullcardsApiClient({
+  BASE: endpoint
 });
 
 function loginIfAvailable() {

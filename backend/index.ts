@@ -5,6 +5,7 @@ import { Server as SocketIoServer } from "socket.io";
 import swaggerUi from "swagger-ui-express";
 import { ValidateError } from "tsoa";
 import { inspect } from "util";
+import httpConfig from "../configs/http.json";
 import { RegisterRoutes } from "../tsoa-build/routes";
 import ApiExposableError from "./api/ApiExposableError";
 import { OidcAuthController } from "./api/controllers/OidcAuthController";
@@ -13,7 +14,6 @@ import dataSource from "./database/dataSource";
 import { CardRelatedEntitySubscriber } from "./database/subscribers/cardRelatedEntitySubscriber";
 
 const dev = process.env.NODE_ENV !== "production";
-const port = 3000;
 
 const nextApp = next({ dev, dir: process.cwd() });
 const handle = nextApp.getRequestHandler();
@@ -91,21 +91,23 @@ const handle = nextApp.getRequestHandler();
   await jwtService.initialize();
   console.log("Initialized Oidc Auth related services");
 
-  const server = createServer(app);
-  const io = new SocketIoServer(server);
-  io.on("connection", async socket => {
-    if (typeof socket.handshake.auth.jwt === "string") {
-      const { jwt } = socket.handshake.auth;
-      if ((await jwtService.verifyJwt(jwt)) !== null)
-        socket.join("authenticated");
-    }
-  });
-  CardRelatedEntitySubscriber.fireEvent = () => {
-    io.to("authenticated").emit("cards_changed");
-  };
+  for (const port of httpConfig.listens_on) {
+    const server = createServer(app);
+    const io = new SocketIoServer(server);
+    io.on("connection", async socket => {
+      if (typeof socket.handshake.auth.jwt === "string") {
+        const { jwt } = socket.handshake.auth;
+        if ((await jwtService.verifyJwt(jwt)) !== null)
+          socket.join("authenticated");
+      }
+    });
+    CardRelatedEntitySubscriber.fireEvent.push(() => {
+      io.to("authenticated").emit("cards_changed");
+    });
 
-  server.listen(port, (err?: Error) => {
-    if (err) throw err;
-    console.log(`Listening on port ${port}`);
-  });
+    server.listen(port, (err?: Error) => {
+      if (err) throw err;
+      console.log(`Listening on port ${port}`);
+    });
+  }
 })();
