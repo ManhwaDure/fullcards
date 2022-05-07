@@ -27,6 +27,19 @@ export default class BufferedInput extends Component<propType, stateType> {
     };
     this.updateValueState = this.updateValueState.bind(this);
     this.triggerEventWhenBlur = this.triggerEventWhenBlur.bind(this);
+    this.setUndirty = this.setUndirty.bind(this);
+  }
+
+  setUndirty(updateValueState = true) {
+    const newState: any = {
+      modified: false,
+      pending: false
+    };
+    if (updateValueState) {
+      newState.valueState = this.props.value;
+    }
+
+    this.setState(newState);
   }
 
   updateValueState(evt: ChangeEvent<HTMLInputElement>) {
