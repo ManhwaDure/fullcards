@@ -4,6 +4,7 @@ import {
   SiteSetting as SiteSettingModel,
   SiteSettingName
 } from "../../database/entities";
+import ApiExposableError from "../ApiExposableError";
 
 type SiteSetting = {
   id: string;
@@ -12,7 +13,7 @@ type SiteSetting = {
 type SiteSettingMap = {
   [key in SiteSettingName]: string;
 };
-@Route("auth")
+@Route("site_setting")
 export class SiteController extends Controller {
   /**
    * Get every site settings
@@ -43,8 +44,13 @@ export class SiteController extends Controller {
   @Security("jwt")
   async setSiteSetting(
     @Route() id: SiteSettingName,
-    @Body() body: Omit<SiteSetting, "id">
+    @Body() body: { value: string | null }
   ): Promise<SiteSetting> {
+    if (id !== "favicon" && body.value === null)
+      throw new ApiExposableError(
+        422,
+        "null value is acceptable only for favicon setting"
+      );
     const repository = await dataSource.getRepository(SiteSettingModel);
     let setting = new SiteSettingModel();
     setting.id = id;
