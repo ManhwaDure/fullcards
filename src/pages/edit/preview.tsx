@@ -1,8 +1,9 @@
 import Head from "next/head";
 import { Component } from "react";
+import socketIo from "socket.io-client";
 import { FullcardsApiClient, SiteSettingMap } from "../../apiClient";
 import RestApiCardPage from "../../components/restApiCardPage";
-import { getApiClient } from "../../GetApiClient";
+import { getApiClient, getApiClientLoginToken } from "../../GetApiClient";
 import ImageUploader from "../../imageUploader";
 import siteSettingsToMetaTags from "../../siteSettingsToMetaTags";
 
@@ -23,8 +24,20 @@ export default class Preview extends Component<
     };
 
     this.onSiteSettingsReceived = this.onSiteSettingsReceived.bind(this);
+    this.fetchSiteSettings = this.fetchSiteSettings.bind(this);
   }
   async componentDidMount() {
+    this.fetchSiteSettings();
+    if (process.browser) {
+      const io = socketIo({
+        auth: {
+          jwt: getApiClientLoginToken()
+        }
+      });
+      io.on("site_settings_changed", this.fetchSiteSettings);
+    }
+  }
+  fetchSiteSettings() {
     this.state.apiClient.default
       .getAllSiteSettings()
       .then(this.onSiteSettingsReceived);
