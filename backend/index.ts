@@ -3,6 +3,7 @@ import { createServer } from "http";
 import next from "next";
 import { Server as SocketIoServer } from "socket.io";
 import httpConfig from "../configs/http.json";
+import addDefaultSiteSettings from "./addDefaultSiteSettings";
 import { OidcAuthController } from "./api/controllers/OidcAuthController";
 import JwtService from "./api/services/JwtService";
 import dataSource from "./database/dataSource";
@@ -30,6 +31,9 @@ const handle = nextApp.getRequestHandler();
   // initializes database
   await dataSource.initialize();
   console.log("Initialized TypeORM dataSource");
+
+  // adds default site setting if not exists
+  await addDefaultSiteSettings();
 
   // initializes jwt service and oidc service
   await OidcAuthController.initializeStaticMembers();
