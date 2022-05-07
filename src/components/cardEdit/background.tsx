@@ -1,9 +1,8 @@
-import { faUpload } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ChangeEvent, Component } from "react";
 import { CardWithDetails, Image } from "../../apiClient";
 import ImageUploader from "../../imageUploader";
 import BufferedInput from "../bufferedInput";
+import { FileUploadControl } from "../fileUploadControl";
 import HelpText from "../helpText";
 
 type propsType = {
@@ -102,37 +101,23 @@ export default class CardBackgroundEditor extends Component<
       <div>
         <div className="field">
           <label className="label">배경 이미지</label>
-          <div className="control">
-            <div className="file has-name">
-              <label className="file-label">
-                <input
-                  type="file"
-                  className="file-input"
-                  name="image"
-                  onChange={this.handleInputEvent}
-                  accept="image/*"
-                  disabled={this.state.uploading}
-                />
-                <span className="file-cta">
-                  <span className="file-icon">
-                    <FontAwesomeIcon icon={faUpload} />
-                  </span>
-                  <span className="file-label">
-                    {this.state.uploading
-                      ? "(업로드중)"
-                      : this.props.background.image === null
-                      ? "배경이미지 업로드"
-                      : "배경이미지 변경"}
-                  </span>
-                </span>
-                <span className="file-name">
-                  {this.props.background.image
-                    ? this.state.filename || "(정보 불러오는 중)"
-                    : "(이미지 없음)"}
-                </span>
-              </label>
-            </div>
-          </div>
+          <FileUploadControl
+            onChange={this.handleInputEvent}
+            accept="image/*"
+            disabled={this.state.uploading}
+            buttonText={
+              this.state.uploading
+                ? "(업로드중)"
+                : this.props.background.image === null
+                ? "배경이미지 업로드"
+                : "배경이미지 변경"
+            }
+            filename={
+              this.props.background.image
+                ? this.state.filename || "(정보 불러오는 중)"
+                : "(이미지 없음)"
+            }
+          ></FileUploadControl>
           <p className="help">
             참고 : 모바일을 고려해 낮은 용량의 이미지(보통 640x320 정도의
             해상도면 괜찮음)를 올릴 것을&nbsp;
