@@ -52,6 +52,26 @@ export default class QuillEditor extends Component<propsType, stateType> {
           value={this.state.value}
           onChange={this.handleDirty}
           onBlur={this.handleBlur}
+          modules={{
+            toolbar: [
+              [{ size: [] }],
+              ["bold", "italic", "underline", "strike", "blockquote"],
+              ["background", "color"],
+              ["link"],
+              ["clean"]
+            ]
+          }}
+          formats={[
+            "background",
+            "bold",
+            "color",
+            "italic",
+            "link",
+            "size",
+            "strike",
+            "script",
+            "underline"
+          ]}
         ></WrappedReactQuill>
         {this.state.dirty && <p className="is-small">수정사항이 있습니다.</p>}
       </div>
