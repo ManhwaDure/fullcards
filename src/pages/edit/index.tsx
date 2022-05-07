@@ -51,21 +51,11 @@ export default class Edit extends Component<
     this.reorderCard = this.reorderCard.bind(this);
     this.updateCard = this.updateCard.bind(this);
     this.createCard = this.createCard.bind(this);
-    this.publish = this.publish.bind(this);
     this.fetchCardData = this.fetchCardData.bind(this);
     this.fetchSiteSettingsData = this.fetchSiteSettingsData.bind(this);
     this.updateSiteSetting = this.updateSiteSetting.bind(this);
     this.signIn = this.signIn.bind(this);
     this.signOut = this.signOut.bind(this);
-  }
-  async publish() {
-    if (confirm("게시하겠습니까?")) {
-      this.setState({ publishing: true });
-
-      await this._apiClient.default.publishWebsite();
-
-      this.setState({ publishing: false });
-    }
   }
   async componentDidMount() {
     this.fetchCardData();
@@ -269,18 +259,11 @@ export default class Edit extends Component<
                 <button className="button" type="button" onClick={this.signOut}>
                   로그아웃
                 </button>
-                {hasPermission && [
+                {hasPermission && (
                   <a href="/edit/preview" target="_blank" className="button">
                     미리보기
-                  </a>,
-                  <button
-                    className="button is-primary"
-                    type="button"
-                    onClick={this.publish}
-                  >
-                    게시
-                  </button>
-                ]}
+                  </a>
+                )}
               </p>
               <p>
                 현재 {this.state.userId}으로 로그인하셨습니다.
