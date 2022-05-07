@@ -9,15 +9,19 @@ type SiteSetting = {
   id: string;
   value: string;
 };
+type SiteSettingMap = {
+  [key in SiteSettingName]: string;
+};
 @Route("auth")
-@Security("jwt")
 export class SiteController extends Controller {
   /**
    * Get every site settings
    */
   @Get()
-  async getAllSiteSettings(): Promise<SiteSetting[]> {
-    return await dataSource.getRepository(SiteSettingModel).find();
+  async getAllSiteSettings(): Promise<SiteSettingMap> {
+    const settings = await dataSource.getRepository(SiteSettingModel).find();
+    const entries = settings.map(({ id, value }) => [id, value]);
+    return Object.fromEntries(entries) as SiteSettingMap;
   }
 
   /**
@@ -36,6 +40,7 @@ export class SiteController extends Controller {
    * @param id site setting name
    */
   @Put("{id}")
+  @Security("jwt")
   async setSiteSetting(
     @Route() id: SiteSettingName,
     @Body() body: Omit<SiteSetting, "id">

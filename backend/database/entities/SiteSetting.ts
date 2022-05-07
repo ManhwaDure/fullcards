@@ -6,6 +6,8 @@ export class SiteSetting {
   @PrimaryColumn()
   id: SiteSettingName;
 
-  @Column()
+  @Column({
+    nullable: true
+  })
   value: string;
 }
