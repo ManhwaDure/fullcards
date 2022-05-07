@@ -4,9 +4,15 @@ import "bulma/css/bulma.min.css";
 import Head from "next/head";
 import { Component } from "react";
 import socket from "socket.io-client";
-import { CardWithDetails, FullcardsApiClient } from "../../apiClient";
+import {
+  CardWithDetails,
+  FullcardsApiClient,
+  SiteSettingMap,
+  SiteSettingName
+} from "../../apiClient";
 import { CardContentButtonEditorEventHandlers } from "../../components/cardEdit/contentButton";
 import CardEditor from "../../components/cardEdit/index";
+import SiteSettingEditor from "../../components/siteSettingEditor";
 import {
   apiClientLogout,
   getApiClient,
@@ -19,9 +25,11 @@ export default class Edit extends Component<
   {},
   {
     cards: CardWithDetails[];
+    siteSettings: SiteSettingMap;
     publishing: boolean;
     edited: boolean;
     userId: string;
+    siteSettingEditorKey: number;
   }
 > {
   _imageUploader: ImageUploader = null;
@@ -31,8 +39,10 @@ export default class Edit extends Component<
     this.state = {
       edited: false,
       cards: [],
+      siteSettings: {},
       publishing: false,
-      userId: null
+      userId: null,
+      siteSettingEditorKey: Date.now()
     };
     this._imageUploader = new ImageUploader();
     this._apiClient = getApiClient();
@@ -42,7 +52,9 @@ export default class Edit extends Component<
     this.updateCard = this.updateCard.bind(this);
     this.createCard = this.createCard.bind(this);
     this.publish = this.publish.bind(this);
-    this.fetchData = this.fetchData.bind(this);
+    this.fetchCardData = this.fetchCardData.bind(this);
+    this.fetchSiteSettingsData = this.fetchSiteSettingsData.bind(this);
+    this.updateSiteSetting = this.updateSiteSetting.bind(this);
     this.signIn = this.signIn.bind(this);
     this.signOut = this.signOut.bind(this);
   }
@@ -56,14 +68,16 @@ export default class Edit extends Component<
     }
   }
   async componentDidMount() {
-    this.fetchData();
+    this.fetchCardData();
+    this.fetchSiteSettingsData();
     if (process.browser) {
       const io = socket({
         auth: {
           jwt: getApiClientLoginToken()
         }
       });
-      io.on("cards_changed", this.fetchData);
+      io.on("cards_changed", this.fetchCardData);
+      io.on("site_settings_changed", this.fetchSiteSettingsData);
     }
 
     if (isApiClientLoggedIn() && this.state.userId === null)
@@ -76,7 +90,7 @@ export default class Edit extends Component<
           apiClientLogout();
         });
   }
-  async fetchData() {
+  async fetchCardData() {
     const cards = await Promise.all(
       (await this._apiClient.default.getCards()).map(
         async i => await this._apiClient.default.getCard(i.id)
@@ -86,9 +100,15 @@ export default class Edit extends Component<
       cards
     });
   }
+  async fetchSiteSettingsData() {
+    const siteSettings = await this._apiClient.default.getAllSiteSettings();
+    this.setState({
+      siteSettings,
+      siteSettingEditorKey: Date.now()
+    });
+  }
   async createCard() {
     await this._apiClient.default.createCard();
-    this.fetchData();
   }
   removeCard(cardId: string) {
     return async () => {
@@ -103,6 +123,13 @@ export default class Edit extends Component<
       if (typeof anotherCard !== "undefined")
         await this._apiClient.default.swapCardOrder(card.id, anotherCard.id);
     };
+  }
+  async updateSiteSetting(settings: SiteSettingMap) {
+    for (const i in settings) {
+      await this._apiClient.default.setSiteSetting(i as SiteSettingName, {
+        value: settings[i]
+      });
+    }
   }
   updateCard(cardId: string) {
     return async (
@@ -171,7 +198,7 @@ export default class Edit extends Component<
           홈페이지에 바로 반영됩니다. 다만{" "}
           <span style={{ textDecoration: "underline" }}>
             배경 위치, 제목, 컨텐츠 내용, 컨텐츠 하단 버튼 텍스트, 컨텐츠 하단
-            버튼 링크대상
+            버튼 링크대상, 사이트 설정
           </span>
           은 포커스를 잃을때(즉 Tab키나 마우스 등을 이용해 다른 곳을 선택하게
           될때) 서버에 자동으로 저장되어 반영됩니다.
@@ -181,6 +208,12 @@ export default class Edit extends Component<
             후 게시하기!
           </strong>
         </p>
+        <SiteSettingEditor
+          imageUploader={this._imageUploader}
+          onChange={this.updateSiteSetting}
+          value={this.state.siteSettings}
+          key={this.state.siteSettingEditorKey}
+        ></SiteSettingEditor>
         {this.state.cards.map((card, index, cards) => (
           <CardEditor
             orderUpButton={index !== 0}
