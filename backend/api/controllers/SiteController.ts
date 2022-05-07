@@ -13,6 +13,14 @@ type SiteSetting = {
 @Security("jwt")
 export class SiteController extends Controller {
   /**
+   * Get every site settings
+   */
+  @Get()
+  async getAllSiteSettings(): Promise<SiteSetting[]> {
+    return await dataSource.getRepository(SiteSettingModel).find();
+  }
+
+  /**
    * Get site setting
    * @param id site setting name
    */
