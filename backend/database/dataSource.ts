@@ -2,7 +2,7 @@ import { readFileSync } from "fs";
 import { join } from "path";
 import { DataSource } from "typeorm";
 import * as entities from "./entities";
-import { CardRelatedEntitySubscriber } from "./subscribers/cardRelatedEntitySubscriber";
+import * as subscribers from "./subscribers";
 
 const ormConfig = JSON.parse(
   readFileSync(join(process.cwd(), "configs/ormConfig.json"), {
@@ -13,7 +13,7 @@ const ormConfig = JSON.parse(
 const dataSource = new DataSource({
   ...ormConfig,
   entities: Object.values(entities),
-  subscribers: [CardRelatedEntitySubscriber]
+  subscribers: Object.values(subscribers)
 });
 
 export default dataSource;

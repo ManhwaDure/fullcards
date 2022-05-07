@@ -7,6 +7,7 @@ import addDefaultSiteSettings from "./addDefaultSiteSettings";
 import { OidcAuthController } from "./api/controllers/OidcAuthController";
 import JwtService from "./api/services/JwtService";
 import dataSource from "./database/dataSource";
+import { SiteSettingEntitySubscriber } from "./database/subscribers";
 import { CardRelatedEntitySubscriber } from "./database/subscribers/cardRelatedEntitySubscriber";
 import initializeApi from "./initializeApi";
 
@@ -59,6 +60,9 @@ const handle = nextApp.getRequestHandler();
     // fire cards_changed socket.io event to listeners
     CardRelatedEntitySubscriber.fireEvent.push(() => {
       io.to("authenticated").emit("cards_changed");
+    });
+    SiteSettingEntitySubscriber.fireEvent.push(() => {
+      io.to("authenticated").emit("site_settings_changed");
     });
 
     // listen port
