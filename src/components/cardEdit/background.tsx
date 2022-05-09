@@ -102,6 +102,7 @@ export default class CardBackgroundEditor extends Component<
         <div className="field">
           <label className="label">배경 이미지</label>
           <FileUploadControl
+            name="image"
             onChange={this.handleInputEvent}
             accept="image/*"
             disabled={this.state.uploading}
