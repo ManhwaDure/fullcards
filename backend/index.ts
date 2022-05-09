@@ -9,7 +9,6 @@ import dataSource from "./database/dataSource";
 import { SiteSettingEntitySubscriber } from "./database/subscribers";
 import { CardRelatedEntitySubscriber } from "./database/subscribers/cardRelatedEntitySubscriber";
 import initializeApi from "./initializeApi";
-import loadConfig from "./loadConfig";
 
 const dev = process.env.NODE_ENV !== "production";
 const port = process.env.HTTP_PORT || 3000;
@@ -18,9 +17,6 @@ const nextApp = next({ dev, dir: process.cwd() });
 const handle = nextApp.getRequestHandler();
 
 (async () => {
-  // read http config
-  const httpConfig = await loadConfig("http.json");
-
   // initialize express app and nextjs app
   await nextApp.prepare();
   const app = express();
