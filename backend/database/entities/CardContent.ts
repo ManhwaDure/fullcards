@@ -31,8 +31,7 @@ export class CardContent extends CardRelated {
    * Content in HTML
    */
   @Column({
-    type: "varchar",
-    length: 10000
+    type: "text"
   })
   content: string;
 
