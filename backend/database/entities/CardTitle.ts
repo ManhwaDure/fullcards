@@ -9,6 +9,9 @@ import { CardSectionTitlePosition } from "../../../src/CardSectionTitlePosition"
 import { Card } from "./Card";
 import { CardRelated } from "./CardRelated";
 
+/**
+ * Title of the {@link Card | card}
+ */
 @Entity()
 export class CardTitle extends CardRelated {
   @PrimaryGeneratedColumn("uuid")

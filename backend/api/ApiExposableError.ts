@@ -1,3 +1,7 @@
+/**
+ * Api-exposable error
+ * Error message will be exposed in api error response
+ */
 export default class ApiExposableError extends Error {
   statusCode: number;
   constructor(statusCode: number, message: string) {

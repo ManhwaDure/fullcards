@@ -73,6 +73,10 @@ export class OidcService {
     return token;
   }
 
+  /**
+   * Do additional check function if provided in config
+   * @param token jwt token
+   */
   async doAdditionalCheckIfExists(token: TokenSet): Promise<boolean> {
     const userinfo = await this._oidcClient.userinfo(token.access_token);
     if (this._oidcConfig.additionalCheckFunction) {

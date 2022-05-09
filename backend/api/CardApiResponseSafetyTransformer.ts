@@ -9,6 +9,9 @@ import {
   Image
 } from "./CardTypes";
 
+/**
+ * Removes useless properties for api response
+ */
 export default class CardApiResponseSafetyTransformer {
   static transformCard({ id, order }: Card): Card {
     let result = { id, order };

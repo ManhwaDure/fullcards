@@ -7,9 +7,16 @@ import {
 } from "typeorm";
 import { CardRelated } from "../entities/CardRelated";
 
+/**
+ * EntitySubscriber for every events of Card-Related entities
+ * This class will call every functions in static fireEvent variable on the event
+ */
 @EventSubscriber()
 export class CardRelatedEntitySubscriber
   implements EntitySubscriberInterface<CardRelated> {
+  /**
+   * Functions that would be called on the event
+   */
   static fireEvent: (() => void)[] = [];
   listenTo() {
     return CardRelated;
