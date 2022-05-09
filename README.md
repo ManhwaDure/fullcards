@@ -5,7 +5,7 @@ This application is written with [Next.js](https://nextjs.org) and TypeScript. T
 
 ## Requirements
 
-- Node.js >=15
+- Node.js >=16.13.0
 - MySQL-compatible relational database
 
 ## How to build and install
