@@ -17,9 +17,9 @@
     "typeorm-schema-sync": "yarn typeorm schema:sync -d backend/database/dataSource.ts",
     "typeorm-schema-drop": "yarn typeorm schema:drop -d backend/database/dataSource.ts",
     "typeorm-migration-generate": "yarn typeorm migration:generate -d backend/database/dataSource.ts",
-    "typeorm-migration-status": "yarn typeorm migration:show -d backend/database/dataSource.ts",
-    "typeorm-migration-run": "yarn typeorm migration:run -d backend/database/dataSource.ts",
-    "typeorm-migration-revert": "yarn typeorm migration:revert -d backend/database/dataSource.ts"
+    "typeorm-migration-status": "TYPEORM_MIGRATION=yes yarn typeorm migration:show -d backend/database/dataSource.ts",
+    "typeorm-migration-run": "TYPEORM_MIGRATION=yes yarn typeorm migration:run -d backend/database/dataSource.ts",
+    "typeorm-migration-revert": "TYPEORM_MIGRATION=yes yarn typeorm migration:revert -d backend/database/dataSource.ts"
   },
   "dependencies": {
     "@babel/core": "^7.17.9",

@@ -15,7 +15,10 @@ const ormConfig = JSON.parse(
 const dataSource = new DataSource({
   ...ormConfig,
   entities: Object.values(entities),
-  subscribers: Object.values(subscribers)
+  subscribers: Object.values(subscribers),
+  ...(process.env.TYPEORM_MIGRATION === "yes"
+    ? { migrationsRun: false, migrations: ["migrations/*.ts"] }
+    : {})
 });
 
 // expose created dataSource
