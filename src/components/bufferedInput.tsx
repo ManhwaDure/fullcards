@@ -43,7 +43,6 @@ export default class BufferedInput extends Component<propType, stateType> {
   }
 
   updateValueState(evt: ChangeEvent<HTMLInputElement>) {
-    console.log(this.state.modified);
     this.setState({
       valueState: evt.target.value,
       modified: evt.target.value != this.props.value

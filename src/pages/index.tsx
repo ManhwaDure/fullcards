@@ -41,7 +41,6 @@ export async function getServerSideProps(
   const apiBase = (await import("../../configs/endpoints/serverSide.json"))
     .default;
   apiClient.request.config.BASE = apiBase;
-  console.log(apiClient.request.config.BASE);
   const cards = await Promise.all(
     (await apiClient.default.getCards()).map(i =>
       apiClient.default.getCard(i.id)
