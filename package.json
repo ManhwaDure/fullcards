@@ -11,6 +11,7 @@
     "build": "yarn build-backend && yarn build-frontend",
     "generate-website": "next export",
     "start": "node ./backend-build/backend",
+    "migrate-and-start": "yarn typeorm-migration-run && yarn start",
     "dev": "nodemon",
     "typeorm": "ts-node -P ./tsconfig.backend.json ./node_modules/typeorm/cli.js",
     "typeorm-schema-sync": "yarn typeorm schema:sync -d backend/database/dataSource.ts",
