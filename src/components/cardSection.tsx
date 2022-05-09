@@ -71,12 +71,12 @@ export default class CardSection extends Component<
               &nbsp;
             </div>
           </VisibilitySensor>
-          <p>
-            {this.props.children}
+          <div>
+            <div className={styles.contentParagraph}>{this.props.children}</div>
             {this.props.scrollDownText && (
               <div className={styles.scrollDownText}>스크롤을 내려보세요!</div>
             )}
-          </p>
+          </div>
         </div>
         {this.props.scrollDownIcon !== false && (
           <div className={styles.scrollDownIcon}>
