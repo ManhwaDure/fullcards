@@ -38,8 +38,7 @@ export async function getServerSideProps(
   context
 ): Promise<{ props: propsType }> {
   const apiClient = getApiClient();
-  const apiBase = (await import("../../configs/endpoints/serverSide.json"))
-    .default;
+  const apiBase = `http://127.0.0.1:${process.env.HTTP_PORT || 3000}/api`;
   apiClient.request.config.BASE = apiBase;
   const cards = await Promise.all(
     (await apiClient.default.getCards()).map(i =>

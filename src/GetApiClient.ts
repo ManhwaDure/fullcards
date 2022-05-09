@@ -1,9 +1,6 @@
-import endpoint from "../configs/endpoints/clientSide.json";
 import { FullcardsApiClient } from "./apiClient";
 
-const apiClient: FullcardsApiClient = new FullcardsApiClient({
-  BASE: endpoint
-});
+const apiClient: FullcardsApiClient = new FullcardsApiClient();
 
 function loginIfAvailable() {
   if (process.browser && isApiClientLoggedIn()) {
