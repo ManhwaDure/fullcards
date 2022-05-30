@@ -35,7 +35,10 @@ export default class RestApiDataCardPage extends Component<
     };
 
     this.transformCardData = this.transformCardData.bind(this);
-    this.transformCardData();
+  }
+
+  async componentDidMount() {
+    await this.transformCardData();
   }
 
   async transformCardData() {
