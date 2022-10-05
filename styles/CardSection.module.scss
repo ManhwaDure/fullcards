@@ -109,7 +109,9 @@ section.fullsizeCard {
   }
   .scrollDownIcon {
     position: absolute;
-    bottom: 3px;
+    bottom: 20px;
+    width: 16px;
+    height: 16px;
     left: 50%;
     transform: translate(-50%, 0%);
     color: white;
