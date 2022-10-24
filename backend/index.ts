@@ -4,6 +4,7 @@ import next from "next";
 import { Server as SocketIoServer } from "socket.io";
 import addDefaultSiteSettings from "./addDefaultSiteSettings";
 import { OidcAuthController } from "./api/controllers/OidcAuthController";
+import { PasswordAuthController } from "./api/controllers/PasswordAuthController";
 import JwtService from "./api/services/JwtService";
 import dataSource from "./database/dataSource";
 import { SiteSettingEntitySubscriber } from "./database/subscribers";
@@ -37,7 +38,11 @@ const handle = nextApp.getRequestHandler();
   await addDefaultSiteSettings();
 
   // initializes jwt service and oidc service
-  await OidcAuthController.initializeStaticMembers();
+  if (process.env.FULLCARDS_USE_PASSWORD_AUTH === "yes") {
+    console.log('Password authentication enabled');
+    await PasswordAuthController.initializeStaticMembers();
+  } else
+    await OidcAuthController.initializeStaticMembers();
   const jwtService = new JwtService();
   await jwtService.initialize();
   console.log("Initialized Oidc Auth related services");

@@ -5,6 +5,7 @@ import Head from "next/head";
 import { Component } from "react";
 import socket from "socket.io-client";
 import {
+  AuthMethod,
   CardWithDetails,
   FullcardsApiClient,
   SiteSettingMap,
@@ -14,6 +15,7 @@ import { CardContentButtonEditorEventHandlers } from "../../components/cardEdit/
 import CardEditor from "../../components/cardEdit/index";
 import SiteSettingEditor from "../../components/siteSettingEditor";
 import {
+  apiClientLogin,
   apiClientLogout,
   getApiClient,
   getApiClientLoginToken,
@@ -170,8 +172,18 @@ export default class Edit extends Component<
     };
   }
   async signIn() {
-    const loginUrl = await this._apiClient.default.getOidcAuthorizationUrl();
-    location.href = loginUrl;
+    const authMethod = await this._apiClient.default.getAuthMethod();
+    switch(authMethod) {
+      case AuthMethod.OPENID_CONNECT_1_0:
+        const loginUrl = await this._apiClient.default.getOidcAuthorizationUrl();
+        location.href = loginUrl;
+        break;
+      case AuthMethod.PASSWORD:
+        const password = prompt('암호를 입력하세요.');
+        const token = await this._apiClient.default.authorizeWithPassword({ password });
+        apiClientLogin(token.jwt);
+        location.reload();
+    }
   }
   async signOut() {
     apiClientLogout();

@@ -6,7 +6,7 @@ This application is written with [Next.js](https://nextjs.org) and TypeScript. T
 ## Requirements
 
 - Node.js >=16.13.0
-- MySQL-compatible relational database
+- MariaDB
 
 ## How to build and install
 
@@ -14,8 +14,12 @@ This application is written with [Next.js](https://nextjs.org) and TypeScript. T
 yarn
 yarn build
 # Create required configuration files here
-yarn migrate-and-run
+yarn migrate-and-start
 ```
+
+## Environmental variable settings
+- `FULLCARDS_USE_PASSWORD_AUTH`: (Optional) Uses password authentication when set to `yes` instead of oidc authentication, useful for debugging
+  - `FULLCARDS_AUTH_PASSWORD`: (Required when `FULLCARDS_USE_PASSWORD_AUTH` is set to `yes`) Password used for authentication
 
 ## Data and configuration files
 

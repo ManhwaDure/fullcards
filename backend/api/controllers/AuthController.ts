@@ -1,6 +1,6 @@
 import { Controller, Get, Request, Route, Security } from "tsoa";
 
-type AuthMethod = "openid_connect_1.0";
+type AuthMethod = "openid_connect_1.0" | "password";
 
 @Route("auth")
 export class AuthController extends Controller {
@@ -11,7 +11,10 @@ export class AuthController extends Controller {
   async getAuthMethod(): Promise<AuthMethod> {
     // TO-DO : Support another authentication method
 
-    return "openid_connect_1.0";
+    if (process.env.FULLCARDS_USE_PASSWORD_AUTH)
+      return "password";
+    else
+      return "openid_connect_1.0";
   }
 
   /**
