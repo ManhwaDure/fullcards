@@ -1,10 +1,15 @@
-import { ChangeEvent, Component } from "react";
+import dynamic from 'next/dynamic';
+import { ChangeEvent, Component, createRef } from "react";
 import { CardWithDetails } from "../../apiClient";
 import ImageUploader from "../../imageUploader";
-import QuillEditor from "../quillEditor";
 import CardContentButtonEditor, {
   CardContentButtonEditorEventHandlers
 } from "./contentButton";
+
+const ToastUiEditor = dynamic(() => import('../toastUiEditor'), {
+  loading: () => <p>편집기를 불러오고있습니다...</p>,
+  ssr: false
+})
 
 type propType = {
   content: CardWithDetails["content"];
@@ -13,11 +18,21 @@ type propType = {
   imageUploader: ImageUploader;
 };
 
-export default class CardContentEditor extends Component<propType> {
+type stateType = {
+  isEditingHTML: boolean
+};
+
+export default class CardContentEditor extends Component<propType, stateType> {
+  private htmlEditor: React.RefObject<HTMLTextAreaElement>;
+
   constructor(props) {
     super(props);
+    this.state = {isEditingHTML: false};
+    
     this.handleContentChange = this.handleContentChange.bind(this);
     this.handleScrollDownChange = this.handleScrollDownChange.bind(this);
+    
+    this.htmlEditor = createRef();
   }
   handleContentChange(newHtml: string) {
     const newOne = this.props.content;
@@ -37,7 +52,7 @@ export default class CardContentEditor extends Component<propType> {
             내용
           </label>
           <div className="control">
-            <QuillEditor
+            <ToastUiEditor
               value={this.props.content.content}
               onChange={this.handleContentChange}
               key={this.props.content.content}

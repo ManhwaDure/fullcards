@@ -121,6 +121,10 @@ section.fullsizeCard {
       margin: 0px;
       padding: 0px;
     }
+    iframe {
+      max-width: calc(100vw - 60px);
+      max-height: calc(100vh - 80px);
+    }
   }
 }
 @keyframes scroll-down-text-animation {
