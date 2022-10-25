@@ -1,5 +1,5 @@
 import dynamic from 'next/dynamic';
-import { ChangeEvent, Component, createRef } from "react";
+import { ChangeEvent, Component } from "react";
 import { CardWithDetails } from "../../apiClient";
 import ImageUploader from "../../imageUploader";
 import CardContentButtonEditor, {
@@ -23,16 +23,12 @@ type stateType = {
 };
 
 export default class CardContentEditor extends Component<propType, stateType> {
-  private htmlEditor: React.RefObject<HTMLTextAreaElement>;
-
   constructor(props) {
     super(props);
-    this.state = {isEditingHTML: false};
-    
+    this.state = { isEditingHTML: false };
+
     this.handleContentChange = this.handleContentChange.bind(this);
     this.handleScrollDownChange = this.handleScrollDownChange.bind(this);
-    
-    this.htmlEditor = createRef();
   }
   handleContentChange(newHtml: string) {
     const newOne = this.props.content;
